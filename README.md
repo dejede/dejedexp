@@ -1,5 +1,6 @@
 # ⚡ Dejede Explorer OpenWrt 25.12.x
 
+[![Dejede Badge](https://img.shields.io/badge/DEJEDE-%2B6285236578999-007EC6?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/6285236578999)
 ![OpenWrt](https://img.shields.io/badge/OpenWrt-24.x%20--%2025.x-1b4b34?logo=openwrt&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.x-777bb4?logo=php&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-blue)
