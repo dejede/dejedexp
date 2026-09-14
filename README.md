@@ -1,4 +1,4 @@
-# ⚡ Dejede Explorer
+# ⚡ Dejede Explorer OpenWrt 25.12.x
 
 ![OpenWrt](https://img.shields.io/badge/OpenWrt-24.x%20--%2025.x-1b4b34?logo=openwrt&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.x-777bb4?logo=php&logoColor=white)
