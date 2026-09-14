@@ -108,7 +108,25 @@ rm -rf /tmp/luci-*
 Buka browser Anda dan akses IP router OpenWrt (misal: http://192.168.1.1).
 
 Masuk ke menu Services -> Dejede Explorer.
-
 Masukkan Username: admin dan Password: admin pada halaman login pertama kali.
-
 Anda bebas mengubah kredensial akun kapan saja melalui tombol 🔑 Akun & Sandi di dalam panel aplikasi.
+
+⚙️ Konfigurasi Web Server (uHTTPd)
+Pastikan web server uHTTPd di OpenWrt mengenali dan mengeksekusi ekstensi .php:
+
+Bash
+uci set uhttpd.main.index_page='index.php'
+uci add_list uhttpd.main.interpreter='.php=/usr/bin/php-cgi'
+uci commit uhttpd
+Restart layanan web server dan cache LuCI:
+
+Bash
+rm -rf /tmp/luci-*
+/etc/init.d/rpcd restart
+/etc/init.d/uhttpd restart
+
+💡 Penggunaan
+Buka peramban (browser) Anda dan akses halaman LuCI router (misal: http://192.168.1.1).
+Masuk ke menu Services -> Dejede Explorer.
+Login Pertama: Masukkan Username admin dan Password admin (Anda dapat mengubah kredensial ini kapan saja melalui menu 🔑 Akun & Sandi di dalam aplikasi).
+Nikmati kemudahan menjelajah direktori sistem, menyunting teks, mengubah permission (Chmod) secara interaktif, hingga mengunggah berkas langsung dari antarmuka LuCI.
