@@ -5,7 +5,6 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen)
 ![Auth](https://img.shields.io/badge/auth-session%20%2B%20CSRF-important)
-![Dejede](https://img.shields.io/badge/auth-session%20%2B%20CSRF-important)
 
 **Dejede Explorer** adalah pengelola berkas (*file manager*) berbasis web yang ringan, satu file inti, dan dirancang untuk berjalan langsung di server web OpenWrt (`uhttpd` + PHP-CGI).
 
