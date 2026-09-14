@@ -11,6 +11,7 @@
 > ⚠️ **Perhatian:** aplikasi ini memberi akses baca/tulis/hapus langsung ke filesystem router lewat browser. Gunakan hanya di jaringan yang kamu percaya, ganti kredensial default segera, dan jangan expose ke WAN tanpa VPN.
 
 ---
+<img width="1887" height="907" alt="image" src="https://github.com/user-attachments/assets/6752138a-ee07-4af7-ab50-0a4d5df255dc" />
 
 ## 📋 Daftar Isi
 1. [Fitur](#-fitur)
