@@ -11,7 +11,7 @@
 > ⚠️ **Perhatian:** aplikasi ini memberi akses baca/tulis/hapus langsung ke filesystem router lewat browser. Gunakan hanya di jaringan yang kamu percaya, ganti kredensial default segera, dan jangan expose ke WAN tanpa VPN.
 
 ---
-<img width="1887" height="907" alt="image" src="https://github.com/user-attachments/assets/6752138a-ee07-4af7-ab50-0a4d5df255dc" />
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/26865b3c-428c-4fe2-86da-212cba548d80" />
 
 ## 📋 Daftar Isi
 1. [Fitur](#-fitur)
@@ -38,6 +38,7 @@
 | ➕ Buat Folder | Buat direktori baru di lokasi saat ini |
 | ✏️ Rename & Hapus | Ganti nama atau hapus file/folder dengan konfirmasi |
 | 🌗 Tema Dark/Light | Toggle tema, default **light**, tersimpan di `localStorage` |
+| 🪟 Efek Glass Hover | Frosted-glass blur muncul saat cursor melintas di menu, tombol, dan baris tabel |
 | ⚙️ Konfigurasi Terpisah | Kredensial & pengaturan disimpan di `config.php`, terpisah dari logika aplikasi |
 
 ---
@@ -75,28 +76,34 @@ apk info -L php8-mod-session   # atau: opkg files php8-mod-session
 
 ## 📂 Instalasi Dejede Explorer
 
-### 1. Buat direktori kerja
-Taruh `manager.php` dan `config.php` dalam satu folder di web root, misalnya langsung di `/www/`:
+### Opsi A — Instalasi Otomatis (disarankan)
+Jalankan installer langsung dari router via SSH:
 ```bash
-scp manager.php config.php root@192.168.1.1:/www/
+wget -O /tmp/install.sh https://raw.githubusercontent.com/dejede/dejedexp/main/install.sh
+sh /tmp/install.sh
+```
+Script ini otomatis akan: memasang PHP + modul session, membuat folder `/www/dejedexp`, mengunduh `index.php` & `config.php` dari repo, mengonfigurasi `uhttpd`, lalu merestart layanan.
+
+### Opsi B — Instalasi Manual
+
+**1. Buat direktori kerja**
+Taruh `index.php` dan `config.php` dalam satu folder khusus, bukan langsung di `/www/` (supaya tidak bentrok dengan `index.html` bawaan LuCI):
+```bash
+mkdir -p /www/dejedexp
+scp index.php config.php root@192.168.1.1:/www/dejedexp/
 ```
 
-### 2. Sesuaikan `config.php`
-Buka `config.php` dan atur:
+**2. Sesuaikan `config.php`**
 ```php
 // Folder yang boleh dikelola lewat file manager
-$managed_folder = '/www/files';   // atau '/' untuk akses penuh ke seluruh filesystem
-
-// Kredensial login
-$auth_user = 'admin';
-$auth_pass_hash = '...'; // hasil dari: php -r "echo password_hash('password_kamu', PASSWORD_DEFAULT);"
+$managed_folder = '/';   // '/' = akses penuh ke seluruh filesystem, atau ganti ke folder tertentu
 ```
 
-> `config.php` sengaja dipisah dari `manager.php` supaya kredensial tidak ikut hilang/tertimpa saat kamu update logika aplikasinya.
+> Kredensial login **tidak** disimpan di `config.php` — file `auth.php` dibuat otomatis oleh `index.php` saat pertama kali diakses (default: `admin` / `admin`), lalu bisa diganti langsung dari dalam aplikasi.
 
-### 3. Set permission
+**3. Set permission**
 ```bash
-chmod 644 /www/manager.php /www/config.php
+chmod 644 /www/dejedexp/index.php /www/dejedexp/config.php
 ```
 
 ---
@@ -119,12 +126,12 @@ uci commit uhttpd
 
 1. Buka browser, akses:
    ```
-   http://IP-ROUTER/manager.php
+   http://IP-ROUTER/dejedexp/
    ```
 2. **Login pertama kali** dengan kredensial default:
    - Username: `admin`
    - Password: `admin`
-3. **Segera ganti password default** — generate hash baru dan perbarui `$auth_pass_hash` di `config.php`:
+3. **Segera ganti password default** — buka menu 🔑 Akun & Sandi di dalam aplikasi setelah login pertama, atau edit `auth.php` langsung:
    ```bash
    php -r "echo password_hash('password_baru_yang_kuat', PASSWORD_DEFAULT);"
    ```
@@ -135,21 +142,25 @@ uci commit uhttpd
 
 ## 🔧 Konfigurasi Lanjutan
 
-Semua pengaturan ada di `config.php`:
+Pengaturan umum ada di `config.php`:
 
 ```php
-$managed_folder      = '/www/files';   // root direktori yang dikelola
-$auth_user            = 'admin';
-$auth_pass_hash       = '...';
-$blocked_extensions   = ['php','phtml','sh','cgi', ...]; // ekstensi upload yang diblokir
-$max_upload_size      = 10 * 1024 * 1024; // batas ukuran upload (bytes)
+$managed_folder      = '/';   // root direktori yang dikelola ('/' = akses penuh)
+$blocked_extensions  = ['php','phtml','sh','cgi', ...]; // ekstensi upload yang diblokir
+$max_upload_size     = 10 * 1024 * 1024; // batas ukuran upload (bytes)
+```
+
+Kredensial login ada di `auth.php` (dibuat otomatis, jangan diedit manual kecuali darurat):
+```php
+$auth_user      = 'admin';
+$auth_pass_hash = '...'; // hasil password_hash()
 ```
 
 ---
 
 ## 🔒 Catatan Keamanan
 
-- **Ganti kredensial default** (`admin`/`admin`) sebelum digunakan di luar pengujian lokal.
+- **Ganti kredensial default** (`admin`/`admin`) lewat menu 🔑 Akun & Sandi segera setelah instalasi.
 - Jika `$managed_folder` diset ke `/`, aplikasi ini punya akses setara root ke seluruh filesystem — perlakukan seperti akses shell root, jangan expose ke WAN tanpa VPN.
 - Validasi ekstensi upload (`$blocked_extensions`) mencegah file executable diunggah lewat form, tapi bukan pengganti firewall — batasi akses jaringan ke halaman ini sebisa mungkin hanya dari LAN.
 - Disarankan mengaktifkan HTTPS di `uhttpd` agar kredensial login tidak dikirim sebagai teks polos.
