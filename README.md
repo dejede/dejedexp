@@ -48,3 +48,67 @@ opkg install php8 php8-mod-session php8-cgi
 Buat folder khusus untuk aplikasi di dalam direktori web server router:
 ```bash
 mkdir -p /www/dejedexp
+
+🧩 Integrasi ke LuCI Dashboard
+Agar Dejede Explorer muncul langsung di dalam menu Services pada dashboard LuCI, jalankan perintah ini via SSH:
+
+Bash
+# 1. Buat file Menu JSON
+mkdir -p /usr/share/luci/menu.d/
+cat << 'EOF' > /usr/share/luci/menu.d/luci-app-dejedexp.json
+{
+    "admin/services/dejedexp": {
+        "title": "Dejede Explorer",
+        "order": 90,
+        "action": {
+            "type": "view",
+            "path": "dejedexp"
+        }
+    }
+}
+EOF
+
+# 2. Buat file View Javascript untuk Iframe
+mkdir -p /www/luci-static/resources/view/
+cat << 'EOF' > /www/luci-static/resources/view/dejedexp.js
+'use strict';
+'require view';
+
+return view.extend({
+    render: function() {
+        return E('div', { class: 'cbi-map' }, [
+            E('h2', { name: 'content' }, 'Dejede Explorer'),
+            E('div', { class: 'cbi-map-descr' }, 'Manajemen File Sistem OpenWrt'),
+            E('div', { class: 'cbi-section', style: 'padding: 0; background: transparent; box-shadow: none;' }, [
+                E('iframe', {
+                    src: '/dejedexp/',
+                    style: 'width: 100%; height: 85vh; min-height: 700px; border: none; border-radius: 8px;'
+                })
+            ])
+        ]);
+    },
+    handleSaveApply: null,
+    handleSave: null,
+    handleReset: null
+});
+EOF
+⚙️ Konfigurasi Web Server (uHTTPd)
+Agar web server uHTTPd di OpenWrt mengenali dan mengeksekusi file .php dengan benar:
+
+Bash
+uci set uhttpd.main.index_page='index.php'
+uci add_list uhttpd.main.interpreter='.php=/usr/bin/php-cgi'
+uci commit uhttpd
+
+# Bersihkan cache LuCI dan restart layanan
+rm -rf /tmp/luci-*
+/etc/init.d/rpcd restart
+/etc/init.d/uhttpd restart
+💡 Cara Penggunaan
+Buka browser Anda dan akses IP router OpenWrt (misal: http://192.168.1.1).
+
+Masuk ke menu Services -> Dejede Explorer.
+
+Masukkan Username: admin dan Password: admin pada halaman login pertama kali.
+
+Anda bebas mengubah kredensial akun kapan saja melalui tombol 🔑 Akun & Sandi di dalam panel aplikasi.
